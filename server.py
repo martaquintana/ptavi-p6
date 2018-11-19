@@ -6,7 +6,6 @@ Clase (y programa principal) para un servidor de eco en UDP simple
 import sys
 import socketserver
 import os
-#os.system('comdando')
 
 class EchoHandler(socketserver.DatagramRequestHandler):
     """
@@ -19,23 +18,35 @@ class EchoHandler(socketserver.DatagramRequestHandler):
             # Leyendo línea a línea lo que nos envía el cliente
             line = self.rfile.read()
             linea_decod = line.decode('utf-8').split(" ")
-            print(linea_decod)
-            if linea_decod[0] == 'INVITE':
+            if (len(linea_decod) != 3 or not 'sip:' in linea_decod[1]
+                or not '@' in linea_decod[1] or not 'SIP/2.0\r\n\r\n' in linea_decod[2]):
+                self.wfile.write(b"SIP/2.0 400 Bad Request\r\n\r\n")
+                break
+            metodo = linea_decod[0]
+            print (metodo)
+            if metodo == 'INVITE':
                 self.wfile.write(b"SIP/2.0 100 Trying\r\n\r\n")
                 self.wfile.write(b"SIP/2.0 180 Ringing\r\n\r\n")
                 self.wfile.write(b"SIP/2.0 200 OK\r\n\r\n")
+                break
 
-            if linea_decod[0] == 'ACK':
-
+            if metodo == 'ACK':
                 aEjecutar = 'mp32rtp -i 127.0.0.1 -p 23032 < ' + sys.argv[3]
                 print("Vamos a ejecutar", aEjecutar)
                 os.system(aEjecutar)
-            if linea_decod[0] == 'BYE':
-                self.wfile.write(b"SIP/2.0 200 OK\r\n\r\n")
-
-            # Si no hay más líneas salimos del bucle infinito
-            if not line:
                 break
+
+            if metodo == 'BYE':
+                self.wfile.write(b"SIP/2.0 200 OK\r\n\r\n")
+                break
+
+            else:
+                self.wfile.write(b"SIP/2.0 405 Method Not Allowed\r\n\r\n")
+                break
+            # Si no hay más líneas salimos del bucle infinito
+            if not line  :
+                break
+
 
 if __name__ == "__main__":
     try:
