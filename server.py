@@ -7,6 +7,7 @@ import sys
 import socketserver
 import os
 
+
 class EchoHandler(socketserver.DatagramRequestHandler):
     """
     Echo server class
@@ -18,10 +19,11 @@ class EchoHandler(socketserver.DatagramRequestHandler):
             # Leyendo línea a línea lo que nos envía el cliente
             line = self.rfile.read()
             linea_decod = line.decode('utf-8').split(" ")
-            if (len(linea_decod) != 3 or not 'sip:' in linea_decod[1]
-                or not '@' in linea_decod[1] or not 'SIP/2.0\r\n\r\n' in linea_decod[2]):
-                self.wfile.write(b"SIP/2.0 400 Bad Request\r\n\r\n")
-                break
+            if (len(linea_decod) != 3 or 'sip:' not in linea_decod[1] or
+                    '@' not in linea_decod[1] or
+                    'SIP/2.0\r\n\r\n' not in linea_decod[2]):
+                        self.wfile.write(b"SIP/2.0 400 Bad Request\r\n\r\n")
+                        break
             metodo = linea_decod[0]
             print (metodo)
             if metodo == 'INVITE':
@@ -44,7 +46,7 @@ class EchoHandler(socketserver.DatagramRequestHandler):
                 self.wfile.write(b"SIP/2.0 405 Method Not Allowed\r\n\r\n")
                 break
             # Si no hay más líneas salimos del bucle infinito
-            if not line  :
+            if not line:
                 break
 
 
