@@ -8,11 +8,10 @@ import socketserver
 import os
 #os.system('comdando')
 
-class EchoHandler(socketserver.DatagramRequestHandler,cancion):
+class EchoHandler(socketserver.DatagramRequestHandler):
     """
     Echo server class
     """
-    
 
     def handle(self):
         # Escribe dirección y puerto del cliente (de tupla client_address)
@@ -25,14 +24,15 @@ class EchoHandler(socketserver.DatagramRequestHandler,cancion):
                 self.wfile.write(b"SIP/2.0 100 Trying\r\n\r\n")
                 self.wfile.write(b"SIP/2.0 180 Ringing\r\n\r\n")
                 self.wfile.write(b"SIP/2.0 200 OK\r\n\r\n")
-                
+
             if linea_decod[0] == 'ACK':
-				
-                aEjecutar = 'mp32rtp -i 127.0.0.1 -p 23032 < ' + self.cancion
+
+                aEjecutar = 'mp32rtp -i 127.0.0.1 -p 23032 < ' + sys.argv[3]
                 print("Vamos a ejecutar", aEjecutar)
                 os.system(aEjecutar)
-				
-				
+            if linea_decod[0] == 'BYE':
+                self.wfile.write(b"SIP/2.0 200 OK\r\n\r\n")
+
             # Si no hay más líneas salimos del bucle infinito
             if not line:
                 break
