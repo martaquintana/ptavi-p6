@@ -21,7 +21,6 @@ try:
         my_socket.connect((SERVER, port))
         if method ==('INVITE' or 'BYE'):
             line = ( method + ' sip:' + sip_address + ' SIP/2.0\r\n\r\n')
-            #if ack
             print(line)
             my_socket.send(bytes(line, 'utf-8'))
             data = my_socket.recv(1024)
@@ -31,10 +30,10 @@ try:
                 line = ( 'ACK' + ' sip:' + sip_address + ' SIP/2.0\r\n\r\n')
                 my_socket.send(bytes(line, 'utf-8'))
                 data = my_socket.recv(1024)
-                
+
     print("Socket terminado.")
 
 except (IndexError, ValueError):
-	print("Usage: python3 client.py method receiver@IP:SIPport")    
+	print("Usage: python3 client.py method receiver@IP:SIPport")
 except ConnectionRefusedError:
     print("Servidor apagado")
