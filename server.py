@@ -25,7 +25,6 @@ class EchoHandler(socketserver.DatagramRequestHandler):
                         self.wfile.write(b"SIP/2.0 400 Bad Request\r\n\r\n")
                         break
             metodo = linea_decod[0]
-            print (metodo)
             if metodo == 'INVITE':
                 self.wfile.write(b"SIP/2.0 100 Trying\r\n\r\n")
                 self.wfile.write(b"SIP/2.0 180 Ringing\r\n\r\n")
