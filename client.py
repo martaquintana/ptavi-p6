@@ -29,7 +29,7 @@ try:
             linea = ('ACK' + ' sip:' + sip_address + ' SIP/2.0\r\n\r\n')
             my_socket.send(bytes(linea, 'utf-8'))
             data = my_socket.recv(1024)
-            
+            print(data.decode('utf-8'))
 
     print("Socket terminado.")
 

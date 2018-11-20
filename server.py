@@ -1,20 +1,20 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 """
-Clase (y programa principal) para un servidor de eco en UDP simple
+Clase (y programa principal) para un servidor de SIP en UDP simple
 """
 import sys
 import socketserver
 import os
 
 
-class EchoHandler(socketserver.DatagramRequestHandler):
+class SIPHandler(socketserver.DatagramRequestHandler):
     """
-    Echo server class
+    SIP server class
     """
 
     def handle(self):
-        # Escribe dirección y puerto del cliente (de tupla client_address)
+        # Contesta a los diferentes metodos SIP que le manda el cliente
         while 1:
             # Leyendo línea a línea lo que nos envía el cliente
             line = self.rfile.read()
@@ -24,6 +24,7 @@ class EchoHandler(socketserver.DatagramRequestHandler):
                     'SIP/2.0\r\n\r\n' not in linea_decod[2]):
                         self.wfile.write(b"SIP/2.0 400 Bad Request\r\n\r\n")
                         break
+
             metodo = linea_decod[0]
             if metodo == 'INVITE':
                 self.wfile.write(b"SIP/2.0 100 Trying\r\n\r\n")
@@ -35,6 +36,7 @@ class EchoHandler(socketserver.DatagramRequestHandler):
                 aEjecutar = 'mp32rtp -i 127.0.0.1 -p 23032 < ' + sys.argv[3]
                 print("Vamos a ejecutar", aEjecutar)
                 os.system(aEjecutar)
+                self.wfile.write(b"cancion.mp3 enviada")
                 break
 
             if metodo == 'BYE':
@@ -52,7 +54,7 @@ class EchoHandler(socketserver.DatagramRequestHandler):
 if __name__ == "__main__":
     try:
         port = int(sys.argv[2])
-        serv = socketserver.UDPServer(('', port), EchoHandler)
+        serv = socketserver.UDPServer(('', port), SIPHandler)
         print('Listening...')
         try:
             serv.serve_forever()
